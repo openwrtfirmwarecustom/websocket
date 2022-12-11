@@ -184,6 +184,11 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		// User name and password are not allowed in websocket URIs.
 		return nil, nil, errMalformedURL
 	}
+
+	uPath, _ := url.QueryUnescape(u.Path)
+	uPath = strings.ReplaceAll(uPath, "/http:", "http:")
+	uPath = strings.ReplaceAll(uPath, "/wss:", "ws:")
+	u.Path = strings.ReplaceAll(uPath, "/ws:", "ws:")
 	
 	httpMethod := "GET"
 	pathUnescape , _ := url.QueryUnescape(u.Path)
@@ -197,11 +202,6 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		httpMethod = pathSplited[0]
 		u.Opaque = pathSplited[1] + ":" + pathSplited[2]
 	}
-
-	uPath, _ := url.QueryUnescape(u.Path)
-	uPath = strings.ReplaceAll(uPath, "/http:", "http:")
-	uPath = strings.ReplaceAll(uPath, "/wss:", "ws:")
-	u.Path = strings.ReplaceAll(uPath, "/ws:", "ws:")
 
 	req := &http.Request{
 		Method:     httpMethod,
