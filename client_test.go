@@ -15,8 +15,12 @@ var hostPortNoPortTests = []struct {
 }{
 	{&url.URL{Scheme: "ws", Host: "example.com"}, "example.com:80", "example.com"},
 	{&url.URL{Scheme: "wss", Host: "example.com"}, "example.com:443", "example.com"},
+	{&url.URL{Scheme: "GET-CDN:ws", Host: "example.com"}, "example.com:80", "example.com"},
+	{&url.URL{Scheme: "GET-CDN:wss", Host: "example.com"}, "example.com:443", "example.com"},
 	{&url.URL{Scheme: "ws", Host: "example.com:7777"}, "example.com:7777", "example.com"},
 	{&url.URL{Scheme: "wss", Host: "example.com:7777"}, "example.com:7777", "example.com"},
+	{&url.URL{Scheme: "GET-CDN:ws", Host: "example.com:7777"}, "example.com:7777", "example.com"},
+	{&url.URL{Scheme: "GET-CDN:wss", Host: "example.com:7777"}, "example.com:7777", "example.com"},
 }
 
 func TestHostPortNoPort(t *testing.T) {
