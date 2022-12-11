@@ -1,3 +1,3 @@
-module github.com/predators46/websocket
+module github.com/openwrtfirmwarecustom/websocket
 
 go 1.12
