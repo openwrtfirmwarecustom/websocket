@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/predators46/websocket"
+	"github.com/openwrtfirmwarecustom/websocket"
 )
 
 var (
