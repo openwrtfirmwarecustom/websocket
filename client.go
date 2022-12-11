@@ -116,7 +116,7 @@ func (d *Dialer) Dial(urlStr string, requestHeader http.Header) (*Conn, *http.Re
 	return d.DialContext(context.Background(), urlStr, requestHeader)
 }
 
-var errMalformedURL = errors.New("malformed ws or wss URL")
+var errMalformedURL = errors.New("malformed ws or wss or GET-CDN:ws or GET-CDN:wss URL")
 
 func hostPortNoPort(u *url.URL) (hostPort, hostNoPort string) {
 	hostPort = u.Host
@@ -126,6 +126,8 @@ func hostPortNoPort(u *url.URL) (hostPort, hostNoPort string) {
 	} else {
 		switch u.Scheme {
 		case "wss":
+			hostPort += ":443"
+		case "GET-CDN:wss":
 			hostPort += ":443"
 		case "https":
 			hostPort += ":443"
@@ -176,6 +178,10 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 		u.Scheme = "http"
 	case "wss":
 		u.Scheme = "https"
+	case "GET-CDN:ws":
+		u.Scheme = "http"
+	case "GET-CDN:wss":
+		u.Scheme = "https"
 	default:
 		return nil, nil, errMalformedURL
 	}
@@ -188,17 +194,9 @@ func (d *Dialer) DialContext(ctx context.Context, urlStr string, requestHeader h
 	uPath, _ := url.QueryUnescape(u.Path)
 	uPath = strings.ReplaceAll(uPath, "/http:", "http:")
 	uPath = strings.ReplaceAll(uPath, "/wss:", "ws:")
-	uPath = strings.ReplaceAll(uPath, "/GET-RAY:", "GET-RAY:")
-	uPath = strings.ReplaceAll(uPath, "/GET-CDN:", "GET-CDN:")
-	uPath = strings.ReplaceAll(uPath, "/GET-RAY/wss:", "/GET-RAY/ws:")
-	uPath = strings.ReplaceAll(uPath, "/GET-RAY/ws:", "/GET-RAY/ws:")
-	uPath = strings.ReplaceAll(uPath, "/GET-CDN/wss:", "/GET-CDN/ws:")
-	uPath = strings.ReplaceAll(uPath, "/GET-CDN/ws:", "/GET-CDN/ws:")
-	uPath = strings.ReplaceAll(uPath, "GET-RAY:wss:", "GET-RAY:ws:")
-	uPath = strings.ReplaceAll(uPath, "GET-RAY:ws:", "GET-RAY:ws:")
-	uPath = strings.ReplaceAll(uPath, "GET-CDN:wss:", "GET-CDN:ws:")
-	uPath = strings.ReplaceAll(uPath, "GET-CDN:ws:", "GET-CDN:ws:")
 	u.Path = strings.ReplaceAll(uPath, "/ws:", "ws:")
+	uPath = strings.ReplaceAll(uPath, "/GET-CDN:wss:", "GET-CDN:ws:")
+	u.Path = strings.ReplaceAll(uPath, "/GET-CDN:ws:", "GET-CDN:ws:")
 
 	req := &http.Request{
 		Method:     http.MethodGet,
